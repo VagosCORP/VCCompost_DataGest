@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.vagoscorp.vccompost.datagest.LayoutDataGestController">
+  <children>
+    <TextArea fx:id="txtAreaLog" editable="false" layoutX="501.0" layoutY="14.0" prefHeight="572.0" prefWidth="485.0" wrapText="true" />
+    <TextField fx:id="txtFldPath" layoutX="85.0" layoutY="14.0" prefHeight="31.0" prefWidth="402.0" />
+    <TextField fx:id="txtFldNumero" layoutX="332.0" layoutY="294.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="22.0" text="Path" />
+    <Label layoutX="201.0" layoutY="299.0" text="Numero  de Vagon:" />
+    <Button fx:id="btnCrearVagon" layoutX="15.0" layoutY="156.0" mnemonicParsing="false" onAction="#handleButtonCrearVagon" prefHeight="31.0" prefWidth="121.0" text="Agregar Vagon" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldPosX" layoutX="85.0" layoutY="209.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="217.0" text="Pos X :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldPosY" layoutX="85.0" layoutY="248.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="256.0" text="Pos Y :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldDx" layoutX="85.0" layoutY="288.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="296.0" text="Dif X :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldDy" layoutX="85.0" layoutY="328.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="336.0" text="Dif Y :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ1S1" layoutX="85.0" layoutY="383.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="391.0" text="Sensor 1 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ1S2" layoutX="85.0" layoutY="421.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="429.0" text="Sensor 2 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ1S3" layoutX="85.0" layoutY="460.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="468.0" text="Sensor 3 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ1S4" layoutX="85.0" layoutY="500.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="15.0" layoutY="508.0" text="Sensor 4 :" />
+    <Button fx:id="btnAgregarJabalina" layoutX="241.0" layoutY="544.0" mnemonicParsing="false" onAction="#handleButtonAgregarJabalina" prefHeight="31.0" prefWidth="121.0" text="Agregar Jabalinas" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ2S1" layoutX="271.0" layoutY="377.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="201.0" layoutY="385.0" text="Sensor 1 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ2S2" layoutX="271.0" layoutY="415.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="201.0" layoutY="423.0" text="Sensor 2 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ2S3" layoutX="271.0" layoutY="454.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="201.0" layoutY="462.0" text="Sensor 3 :" />
+    <TextField id="txtFldPrioridad" fx:id="txtFldJ2S4" layoutX="271.0" layoutY="494.0" prefHeight="31.0" prefWidth="61.0" />
+    <Label layoutX="201.0" layoutY="502.0" text="Sensor 4 :" />
+    <Button fx:id="btnInitSample" layoutX="414.0" layoutY="465.0" mnemonicParsing="false" onAction="#handleButtonInitSample" prefHeight="31.0" prefWidth="73.0" text="Init S" />
+    <Button fx:id="btnEndSample" layoutX="414.0" layoutY="503.0" mnemonicParsing="false" onAction="#handleButtonEndSample" prefHeight="31.0" prefWidth="73.0" text="End S" />
+    <Button fx:id="btnGetVagon" layoutX="414.0" layoutY="544.0" mnemonicParsing="false" onAction="#handleButtonGetVagon" prefHeight="31.0" prefWidth="73.0" text="Get V" />
+    <Button layoutX="85.0" layoutY="53.0" mnemonicParsing="false" onAction="#handleButtonInicializarGest" prefHeight="57.0" prefWidth="97.0" text="Inicializar Gestor" textAlignment="CENTER" wrapText="true" />
+    <TextField fx:id="IP" layoutX="201.0" layoutY="156.0" prefWidth="200.0" promptText="Tablet IP" text="20.0.0.7" />
+    <TextField fx:id="Port" layoutX="201.0" layoutY="183.0" prefWidth="200.0" promptText="Tablet Port" text="2000" />
+    <Button fx:id="updIP" layoutX="414.0" layoutY="156.0" mnemonicParsing="false" onAction="#setIP" prefHeight="53.0" text="Button" />
+  </children>
+</AnchorPane>

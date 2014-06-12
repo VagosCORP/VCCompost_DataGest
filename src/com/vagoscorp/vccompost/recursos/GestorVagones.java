@@ -1,3 +1,9 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package com.vagoscorp.vccompost.recursos;
 
 import java.io.BufferedReader;
@@ -7,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -14,34 +21,57 @@ import java.util.logging.Logger;
 
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class GestVagones {
-    private Vagon[] vagones; //lista de vagones del equipo
-    public Integer[] prioridades; //lista de prioridades para los vagones
-    private Integer vagCreadosHoy=0;  //contador de vagones creados hoy
-    public final Integer nVmax;     //numero maximo de vagones a almacenarse en la lista
-    private Integer fecha=99;           //fecha del ultimo vagon agregado
-    private String pathRel;         //path relativo 
-    private String pathReg;
-    public Integer vagExistentes=0;
-    public SimpleBooleanProperty  disponible=new SimpleBooleanProperty(true);
+/**
+ *
+ * @author Francisco
+ */
+
+
+
+public class GestorVagones {
+   
+	
+	private final Integer nVmax;//numero maximo de vagones a almacenarse
+	private String pathRel;	//direccion de la carpeta de almacenamiento de datos
+	private String pathSend;//direccion de la carpeta de archivos de envio
+	private Vagon[] vagones;//vagones del equipo 
+	private String pathReg;//path de los archivos de registro permanentes del equipo
+	
+	
+	private Integer fecha=99;  //fecha del ultimo vagon agregado
+    private Integer vagCreadosHoy=0; //numero de vagones creados hoy
+    private Integer vagExistentes=0; //numero de vagones existentes
+    
+    public SimpleBooleanProperty  disponible=new SimpleBooleanProperty(true);//control de flujo
+	
     /**
      * Crea un nuevo gestor de vagones
      * @param maxVag Numero maximo de vagones
      * @param dir Path de la carpeta general de almacenamiento de datos
      */
-    public GestVagones(int maxVag,String dir){
-        this.nVmax=new Integer(maxVag);
+    public GestorVagones(int maxVag,String dir){
+    	this.nVmax=new Integer(maxVag);
         this.pathRel=dir;
         vagones=new Vagon[maxVag];
         pathReg=pathRel+"data//";
-        //verificar existencia de directorio
+        pathSend=pathRel+"send//";
+        //verificar existencia de directorios
         if(Files.notExists(Paths.get(pathReg))){
                 try {
                         Files.createDirectories(Paths.get(pathReg));
                 } catch (IOException e) {
-                        System.out.println("No se pudo crear la carpeta verificar si ya existe");
+                        System.out.println("No se pudo crear la carpeta de registros verificar si ya existe");
                         //incorporar eventos de gestion de errores 
                 }
+        }
+        
+        if(Files.notExists(Paths.get(pathSend))){
+            try {
+                    Files.createDirectories(Paths.get(pathSend));
+            } catch (IOException e) {
+                    System.out.println("No se pudo crear la carpeta de envio verificar si ya existe");
+                    //incorporar eventos de gestion de errores 
+            }
         }
         //crear archivo de registro
         pathReg=pathReg+"vgrg.vcdt";
@@ -50,6 +80,7 @@ public class GestVagones {
         } catch (IOException e) {
                 System.out.println("No se pudo crear el archivo ver posibles soluciones");
         }
+        
     }
     /**
      * Reconstruye el Registro de vagones y temperaturas en base al archivo de registro correspondiente
@@ -58,12 +89,11 @@ public class GestVagones {
      * @throws IOException es lanzada en caso de no poder leer el archivo de registro
      */
     
-    public GestVagones(String dir) throws FileNotFoundException, IOException{
-        int nm=0;
+    public GestorVagones(String dir) throws FileNotFoundException, IOException{
+    	int nm=0;
         this.pathRel=dir;
         pathReg=pathRel+"data//vgrg.vcdt";
         BufferedReader inputStream=null;
-//        String res;
         int c=0;
         String l;
         inputStream=new BufferedReader(new FileReader(pathReg));
@@ -88,23 +118,23 @@ public class GestVagones {
                 }
             }
             if((c>3)&&(c<(vagExistentes+4))){
-                String[] dt=l.split(";"); //0-->path 1-->dia 2-->mes 3-->year 4-->numero de vagon  5-->posicion 6-->en muestreo
+                String[] dt=l.split(";"); //0-->path Registro 1-->path Envio 2-->en muestreo
                 String dp=dt[0];
-                Integer dia=Integer.parseInt(dt[1]);
-                Integer mes=Integer.parseInt(dt[2]);
-                Integer year=Integer.parseInt(dt[3]);
-                Integer nv=Integer.parseInt(dt[4]);
-                Integer pos=Integer.parseInt(dt[5]);
-                Boolean enS=Boolean.getBoolean(dt[6]);
-                vagones[c-4]=new Vagon(dp, dia, mes, year, nv, pos, enS);
-                
+                String pEnvio=dt[1];
+                Boolean enS=Boolean.parseBoolean(dt[2]);
+                vagones[c-4]=new Vagon(dp,pEnvio);
+                vagones[c-4].enSampling=enS;
+                vagones[c-4].hultimoMuestreo=dt[3];
+                System.out.println("se recupero Vagon: "+vagones[c-4].getRegPath());
+                System.out.println("archivo de envio: "+vagones[c-4].getTempPath());
+                System.out.println("Muestreo Habilitado: "+vagones[c-4].enSampling);
             }
             c++;
         }
         inputStream.close();
         this.nVmax=nm;
         
-
+        
     }
     //metodos
     /**
@@ -113,7 +143,7 @@ public class GestVagones {
      */
 
     public void setPath(String dir){
-        this.pathRel=dir;
+        pathRel=dir;
     }
     /**
      * Devuelve el path de la carpeta de almacenamiento
@@ -146,7 +176,7 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      */
     
     private void saveData(){
-        PrintWriter oStReg=null;
+    	PrintWriter oStReg=null;
         try {
             oStReg=new PrintWriter(new FileWriter(pathReg,false));  // se sobreescribira el archivo cada vez
             oStReg.println(this.nVmax.toString()); 
@@ -155,17 +185,15 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
             oStReg.println(this.vagExistentes.toString());
             for(Vagon vg:vagones){
                 if(vg!=null){
-                    oStReg.println(vg.getRcData());
+                    oStReg.println(vg.getRegPath()+";"+vg.getTempPath()+";"+vg.enSampling.toString()+";"+vg.getLastH()+";");
                 }
             }
             oStReg.close();
         } catch (IOException ex) {
-            Logger.getLogger(GestVagones.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GestorVagones.class.getName()).log(Level.SEVERE, null, ex);
             //agregar manejo de errores
         }
-        
-        //posiblemente la lista de prioridades tb
-        
+                
     }
     
     
@@ -175,9 +203,12 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      * @param desc Descripcion de las caracteristicas del vagon: materiales, observaciones, etc.
      */
     public void addVagon(String desc){
-        Calendar tcr=Calendar.getInstance();
+    	Calendar tcr=Calendar.getInstance();
         Integer dia= tcr.get(Calendar.DAY_OF_MONTH);
-        if(dia==fecha){
+        Integer mes= tcr.get(Calendar.MONTH)+1;
+        Integer year=tcr.get(Calendar.YEAR);
+        
+        if(dia!=fecha){
             fecha=dia;
             vagCreadosHoy=0;
             
@@ -186,20 +217,29 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
         disponible.set(false);
         for(int i=(nVmax-1);i>0;i--){
             vagones[i]=vagones[i-1];
-        }
-        vagones[0]=new Vagon(0, 1, vagCreadosHoy, pathRel);
-        int a=0;
-        for(Vagon vg:vagones){
-            a++;
-            if(vg!=null){
-                vg.num=a;
+            if(vagones[i]!=null){
+                vagones[i].renameSendF(pathSend+(i+1)+".vctemp");
             }
         }
-        for(int c=(nVmax-1);c>0;c--){
-            if(vagones[c]!=null){
-                vagones[c].renameTemp();
+        
+        Path dirRegVag=Paths.get(pathRel+"data//"+year+"//"+mes+"//");
+        
+        
+        
+        if(Files.notExists(dirRegVag)){
+            try {
+                    Files.createDirectories(dirRegVag);
+            } catch (IOException e) {
+                    System.out.println("No se pudo crear la carpeta de envio verificar si ya existe");
+                    //incorporar eventos de gestion de errores 
             }
         }
+        
+//        <d�a>-vg<#de vagoncreado>.vcdt
+//        Archivo de envio:
+//        <posicion 1-32>.vctemp
+        vagones[0]=new Vagon(dirRegVag.toString()+"//"+dia.toString()+"-vg"+vagCreadosHoy.toString()+".vcdt",
+        		pathSend+"1"+".vctemp");
 
         if(vagExistentes<nVmax){
             vagExistentes++;
@@ -210,7 +250,7 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
     /**
      * Inicializa el muestreo en el vagon especificado
      * @param v numero de vagon requerido de 1 a vagones existentes
-     * @throws NullPointerException en caso de solicitar un vagon no existente todavía
+     * @throws NullPointerException en caso de solicitar un vagon no existente todav�a
      */
     public void initSampling(int v)throws NullPointerException{
         if((v<1)||(v>getNumVagones())){
@@ -218,6 +258,7 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
         }
         vagones[v-1].initSamples();
         saveData();
+        
     }
     /**
      * Finaliza el muestreo en el vagon especificado
@@ -225,11 +266,12 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      * @throws NullPointerException en caso de solicitar un vagon no existente todavía
      */
     public void endSampling(int v)throws NullPointerException{
-        if((v<1)||(v>getNumVagones())){
+    	if((v<1)||(v>getNumVagones())){
             throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones disponibles");
         }
         vagones[v-1].endSamples();
         saveData();
+        
     }
     /**
      * Agrega un par de jabalinas al vagon indicado
@@ -238,12 +280,11 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      * @throws NullPointerException en caso de intentar modificar un vagon no existente
      * @throws IOException  en caso de no poder acceder a los archivos requeridos
      */
-    public void addSample(int v,Jabalinas jab)throws NullPointerException, IOException{
-        if((v<1)||(v>getNumVagones())){
+    public void addSample(int v,int x1,int y1,int x2,int y2,Integer a1,Integer a2,Integer a3,Integer a4,Integer b1,Integer b2,Integer b3,Integer b4)throws NullPointerException, IOException{
+    	if((v<1)||(v>getNumVagones())){
             throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones disponibles");
         }
-        vagones[v-1].addSample(jab);
-
+        vagones[v-1].addSample(x1, y1, x2, y2, a1, a2, a3, a4, b1, b2, b3, b4);
     }
     /**
      * Devuelve la informacion del vagon requerido como string con formato
@@ -253,45 +294,18 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      * @throws IOException  en caso de no poder acceder a los archivos requeridos
      */
     public String getVag(int v)throws NullPointerException, IOException{
-        if((v<1)||(v>nVmax)){
-            throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones");
+    	if((v<1)||(v>getNumVagones())){
+            throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones disponibles");
         }
-        if(vagones[v-1]!=null){
-            return vagones[v-1].getVagon();
-        }
-        else{
-            throw new NullPointerException("El vagon requerido no ha sido inicializado");
-        }
+    	return "1#"+v+vagones[v-1].getVagon();
     }
-    
-    public String getParJab(int v,int i)throws NullPointerException{
-        if((v<1)||(v>nVmax)){
-            throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones");
-        }
-        if(vagones[v-1]!=null){
-            return vagones[v-1].getParJabalinas(i);
-        }
-        else{
-            throw new NullPointerException("El vagon requerido no ha sido inicializado");
-        }
-    }
-    public String getJab(int v,int i,int j)throws NullPointerException{
-        if((v<1)||(v>nVmax)){
-            throw new NullPointerException("El indice requerido esta fuera del rango de vagones existentes: 0<v<=#devagones");
-        }
-        if(vagones[v-1]!=null){
-            return vagones[v-1].getJabalina(i, j);
-        }
-        else{
-            throw new NullPointerException("El vagon requerido no ha sido inicializado");
-        }
-    }
+
     /**
      * 
      * @return Cantidad de vagones existentes
      */
     public Integer getNumVagones(){
-        int cv=0;
+    	int cv=0;
         for(Vagon vg: vagones){
             if(vg!=null){
                 cv++;
@@ -304,23 +318,12 @@ posiblemente luego la lista de prioridades(no es seguro usarlas todavía)
      * @return Devuelve arreglo con las horas del ultimo muestreo finalizado por vagon
      */
     public String[] getLastH(){
-        int i=getNumVagones();
+    	int i=getNumVagones();
         String[] horas= new String[i];
-        for(int c=0;c<i;i++){
+        for(int c=0;c<i;c++){
             horas[c]=vagones[c].getLastH();
         }
         return horas;
     }
-    /**
-     * 
-     * @return Devuelve arreglo con las horas de la ultima jabalina agregada por vagon
-     */
-    public String[] getActualH(){
-        int i=getNumVagones();
-        String[] horas= new String[i];
-        for(int c=0;c<i;i++){
-            horas[c]=vagones[c].getActualH();
-        }
-        return horas;
-    }
+
 }

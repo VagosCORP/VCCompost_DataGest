@@ -13,8 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import com.vagoscorp.vccompost.recursos.GestVagones;
-import com.vagoscorp.vccompost.recursos.Jabalinas;
+import com.vagoscorp.vccompost.recursos.GestorVagones;
 import com.vagoscorp.vccompost.sensors.Adquirir_Temperaturas;
 import com.vagoscorp.vccompost.sensors.Adquirir_Temperaturas.listener;
 import com.vagoscorp.vccompost.tablet.Actualizar_Tablet;
@@ -58,20 +57,20 @@ public class LayoutDataGestController implements Initializable {
 	Actualizar_Tablet act_tab;
 	Thread temperatureThread;
 	Thread tabletThread;
-	GestVagones vagones;
+	GestorVagones vagones;
 
 	// /////////////////////Eventos GUI////////////////////////
 	@FXML
 	private void handleButtonInicializarGest(ActionEvent event) {
 		String path = txtFldPath.getText();
 		try {
-			vagones = new GestVagones(path);
+			vagones = new GestorVagones(path);
 			txtAreaLog.appendText("Archivo de Registro Cargado con Exito! \n");
 		} catch (IOException ex) {
 			txtAreaLog.appendText(ex.getMessage() + "\n");
 			txtAreaLog.appendText("Archivo de Registro No Encontrado, "
 					+ "Nuevo Registro Creado! \n");
-			vagones = new GestVagones(32, path);
+			vagones = new GestorVagones(32, path);
 		}
 	}
 
@@ -100,8 +99,8 @@ public class LayoutDataGestController implements Initializable {
 			public void procTerminated() {
 				try {
 					int nvag = Integer.parseInt(txtFldNumero.getText());
-					vagones.addSample(nvag,
-						new Jabalinas(
+					vagones.addSample(
+							nvag,
 							Integer.parseInt(txtFldPosX.getText()),
 							Integer.parseInt(txtFldPosY.getText()),
 							Integer.parseInt(txtFldDx.getText()),
@@ -113,7 +112,7 @@ public class LayoutDataGestController implements Initializable {
 							Math.round(adq_temp.resF[4]),// */ Integer.parseInt(txtFldJ2S1.getText()),
 							Math.round(adq_temp.resF[5]),// */ Integer.parseInt(txtFldJ2S2.getText()),
 							Math.round(adq_temp.resF[6]),// */ Integer.parseInt(txtFldJ2S3.getText()),
-							Math.round(adq_temp.resF[7])));// */ Integer.parseInt(txtFldJ2S4.getText())));
+							Math.round(adq_temp.resF[7]));// */ Integer.parseInt(txtFldJ2S4.getText())));
 					act_tab.enviarDatos(vagones.getVag(nvag));
 				} catch (NullPointerException ex) {
 					Logger.getLogger(LayoutDataGestController.class.getName())

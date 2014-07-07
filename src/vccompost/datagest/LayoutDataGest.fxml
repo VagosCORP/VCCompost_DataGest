@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.vagoscorp.vccompost.datagest.LayoutDataGestController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="vccompost.datagest.LayoutDataGestController">
   <children>
     <TextArea fx:id="txtAreaLog" editable="false" layoutX="501.0" layoutY="14.0" prefHeight="572.0" prefWidth="485.0" wrapText="true" />
     <TextField fx:id="txtFldPath" layoutX="85.0" layoutY="14.0" prefHeight="31.0" prefWidth="402.0" />

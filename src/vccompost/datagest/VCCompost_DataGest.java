@@ -1,4 +1,4 @@
-package com.vagoscorp.vccompost.datagest;
+package vccompost.datagest;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

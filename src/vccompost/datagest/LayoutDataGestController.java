@@ -1,4 +1,4 @@
-package com.vagoscorp.vccompost.datagest;
+package vccompost.datagest;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,11 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-
-import com.vagoscorp.vccompost.recursos.GestorVagones;
-import com.vagoscorp.vccompost.sensors.Adquirir_Temperaturas;
-import com.vagoscorp.vccompost.sensors.Adquirir_Temperaturas.listener;
-import com.vagoscorp.vccompost.tablet.Actualizar_Tablet;
+import vccompost.datagest.recursos.GestorVagones;
+import vccompost.sensors.Adquirir_Temperaturas;
+import vccompost.sensors.Adquirir_Temperaturas.AdListener;
+import vccompost.tablet.Actualizar_Tablet;
 
 public class LayoutDataGestController implements Initializable {
 
@@ -88,15 +87,15 @@ public class LayoutDataGestController implements Initializable {
 	@FXML
 	private void handleButtonAgregarJabalina(ActionEvent event) {
 		adq_temp = new Adquirir_Temperaturas();
-		adq_temp.setListener(new listener() {
+		adq_temp.setAdListener(new AdListener() {
 
 			@Override
-			public void dataRCV() {
-
+			public void OnDataReceived() {
+				
 			}
 
 			@Override
-			public void procTerminated() {
+			public void OnProcTerminated() {
 				try {
 					int nvag = Integer.parseInt(txtFldNumero.getText());
 					vagones.addSample(
@@ -105,14 +104,14 @@ public class LayoutDataGestController implements Initializable {
 							Integer.parseInt(txtFldPosY.getText()),
 							Integer.parseInt(txtFldDx.getText()),
 							Integer.parseInt(txtFldDy.getText()),
-							Math.round(adq_temp.resF[0]),// */ Integer.parseInt(txtFldJ1S1.getText()),
-							Math.round(adq_temp.resF[1]),// */ Integer.parseInt(txtFldJ1S2.getText()),
-							Math.round(adq_temp.resF[2]),// */ Integer.parseInt(txtFldJ1S3.getText()),
-							Math.round(adq_temp.resF[3]),// */ Integer.parseInt(txtFldJ1S4.getText()),
-							Math.round(adq_temp.resF[4]),// */ Integer.parseInt(txtFldJ2S1.getText()),
-							Math.round(adq_temp.resF[5]),// */ Integer.parseInt(txtFldJ2S2.getText()),
-							Math.round(adq_temp.resF[6]),// */ Integer.parseInt(txtFldJ2S3.getText()),
-							Math.round(adq_temp.resF[7]));// */ Integer.parseInt(txtFldJ2S4.getText())));
+							Math.round(adq_temp.sen[1]),// */ Integer.parseInt(txtFldJ1S1.getText()),
+							Math.round(adq_temp.sen[2]),// */ Integer.parseInt(txtFldJ1S2.getText()),
+							Math.round(adq_temp.sen[3]),// */ Integer.parseInt(txtFldJ1S3.getText()),
+							Math.round(adq_temp.sen[4]),// */ Integer.parseInt(txtFldJ1S4.getText()),
+							Math.round(adq_temp.sen[5]),// */ Integer.parseInt(txtFldJ2S1.getText()),
+							Math.round(adq_temp.sen[6]),// */ Integer.parseInt(txtFldJ2S2.getText()),
+							Math.round(adq_temp.sen[7]),// */ Integer.parseInt(txtFldJ2S3.getText()),
+							Math.round(adq_temp.sen[8]));// */ Integer.parseInt(txtFldJ2S4.getText())));
 					act_tab.enviarDatos(vagones.getVag(nvag));
 				} catch (NullPointerException ex) {
 					Logger.getLogger(LayoutDataGestController.class.getName())

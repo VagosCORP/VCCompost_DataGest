@@ -1,4 +1,4 @@
-package com.vagoscorp.vccompost.recursos;
+package vccompost.datagest.recursos;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -169,7 +169,7 @@ public class Vagon {
 			jabBuff+=l+"&";
 			njab++;
 		}
-		res= "#"+njab.toString()+"#"+jabBuff+"/";
+		res= "#"+Integer.toString(njab*2)+"#"+jabBuff+"/";
 		inputStream.close();
 
 		return res;
